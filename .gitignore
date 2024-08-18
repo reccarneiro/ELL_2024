@@ -1,3 +1,12 @@
+# Ignore all in Results, Data, Figures
+Inflation_Forecast/Data/*
+Inflation_Forecast/Figures/*
+Inflation_Forecast/Results/*
+
+# But, do not ignore the database and data
+!Inflation_Forecast/Results/*.db
+!Inflation_Forecast/Data/2024-06.csv
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
