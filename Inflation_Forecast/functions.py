@@ -1,7 +1,7 @@
 import numpy as np
 import pandas as pd
 import time
-# from numba import jit
+from numba import jit
 import datetime
 import os
 import matplotlib.pyplot as plt
@@ -76,18 +76,17 @@ def get_data(Transformation, lags):
     Y_used = Y.iloc[12+num_lags:].reset_index(drop=True)
     Date_used = Date.iloc[12+num_lags:].reset_index(drop=True)
     Date_used = pd.to_datetime(Date_used)
-
     
     return X_used, Y_used, Date_used
 
-# @jit(nopython=True)
+@jit(nopython=True)
 def get_Gram(X,n,gamma):
     Gram_rbf = np.zeros((n,n))
     for t in range(n):
         Gram_rbf[t,:] = np.exp(-gamma*np.sum((X[t,:]-X)**2,1))
     return Gram_rbf
 
-# @jit(nopython=True)
+@jit(nopython=True)
 def get_Gram_test(X_train,X_test,n_train,n_test,gamma):
     Gram_rbf = np.zeros((n_test,n_train))
     for t in range(n_test):

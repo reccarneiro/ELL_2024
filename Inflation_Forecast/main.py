@@ -497,6 +497,65 @@ for seed in seed_list:
             'Transformation': Transformation
             }
     AdaLasso_out = pd.DataFrame.from_dict(AdaLasso_out)
+
+
+    #######################################################################################
+    ##############################   ADALASSO (BIC,AIC)   #################################
+    #######################################################################################
+    X_train_stzd_tilde = X_train_stzd*np.abs(Ridgemodel_dict[min_idx_ridge].coef_)
+    X_val_stzd_tilde = X_val_stzd*np.abs(Ridgemodel_dict[min_idx_ridge].coef_)
+    X_test_stzd_tilde = X_test_stzd*np.abs(Ridgemodel_dict[min_idx_ridge].coef_)
+
+    alpha_list = np.linspace(1e-15,0.0000001,50)
+    val_err = np.zeros((n_val,len(alpha_list)))
+    AIC = np.zeros((len(alpha_list),))
+    BIC = np.zeros((len(alpha_list),))
+    AdaLassomodel_dict = {}
+    for cv_i, alpha in enumerate(alpha_list):
+        AdaLassomodel_dict[cv_i] = Lasso(alpha=alpha, fit_intercept=True,  warm_start=True, random_state=seed)
+        AdaLassomodel_dict[cv_i].fit(X_train_stzd_tilde, Y_train)
+
+        DF = np.sum(AdaLassomodel_dict[cv_i].coef_ !=0)
+        RSS = np.sum((Y_train-AdaLassomodel_dict[cv_i].predict(X_train_stzd_tilde))**2)
+        BIC[cv_i] = n_train*np.log(RSS) + DF*np.log(n_train)
+        AIC[cv_i] = n_train*np.log(RSS) + DF*2
+
+        Y_hat = AdaLassomodel_dict[cv_i].predict(X_val_stzd_tilde) 
+        val_err[:, cv_i] = Y_val.values-Y_hat
+
+    min_idx = np.argmin(np.mean(np.array(val_err)**2, axis=0))
+    val_err_AdaLasso = np.mean(np.array(val_err)**2, axis=0)
+
+    min_idx_AIC = np.argmin(AIC)
+    min_idx_BIC = np.argmin(BIC)
+
+    Validation_Err['ADALASSO',seed] = pd.DataFrame()
+    Validation_Err['ADALASSO',seed]['alpha_list'] = alpha_list
+    Validation_Err['ADALASSO',seed]['val_err'] = val_err_AdaLasso
+
+    plt.plot(alpha_list, val_err_AdaLasso)
+    plt.xlabel('alpha')
+    plt.title('Validation Error, ADALASSO, argmin=%0.7f'%alpha_list[min_idx])
+    plt.savefig("Figures/ADALASSO_validation_seed%i.png"%seed)
+    plt.close()
+    # plt.show()
+
+    Y_hat = AdaLassomodel_dict[min_idx].predict(X_test_stzd_tilde)
+    test_err_Lasso = Y_test.values - Y_hat
+    RMSE_AdaLasso = np.sqrt(np.sum(test_err_Lasso**2)/len(test_err_Lasso))
+
+    AdaLasso_out = {'Date': Date_used[forecast_idx].dt.strftime("%m/%d/%Y").values,
+            'Target': Target,
+            'Value': Y_test.values,
+            'Prediction': Y_hat,
+            'Model': 'ADALASSO',
+            'Seed': seed,
+            'Parameter': str(alpha_list[min_idx]),
+            'Window_size': n_train,
+            'Validation_size': n_val,
+            'Transformation': Transformation
+            }
+    AdaLasso_out = pd.DataFrame.from_dict(AdaLasso_out)
     
     #######################################################################################
     ####################################   PCR    #########################################

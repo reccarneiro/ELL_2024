@@ -1,9 +1,13 @@
 numpy
 pandas
 openpyxl
-scikit-learn
 jupyter
 matplotlib
 statsmodels
 pandoc
 pyppeteer
+numba
+scikit-learn
+xgboost
+tensorflow
+jupyterlab

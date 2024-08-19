@@ -2,6 +2,7 @@
 Inflation_Forecast/Data/*
 Inflation_Forecast/Figures/*
 Inflation_Forecast/Results/*
+Inflation_Forecast/ignore/*
 
 # But, do not ignore the database and data
 !Inflation_Forecast/Results/*.db
