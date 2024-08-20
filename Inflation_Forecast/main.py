@@ -19,8 +19,8 @@ import xgboost as xgb
 import tensorflow as tf
 
 # Transform:
-# Transformation = 'No Transform'
-Transformation = 'Transform' 
+Transformation = 'No Transform'
+# Transformation = 'Transform' 
 # :Transforms according to the recommendations given by McCracken and Ng (2015) for all but Group 7 (Prices),
 #  which are transformed as year over year growth
 
@@ -35,7 +35,7 @@ X_used, Y_used, Date_used = get_data(Transformation, lags)
 
 n = X_used.shape[0]
 
-forecast_period = pd.to_datetime('2015-01-01')<=Date_used
+forecast_period = (pd.to_datetime('2015-01-01')<=Date_used) & (pd.to_datetime('2020-01-01')>Date_used)
 forecast_idx = np.where(forecast_period)[0]
 n_test = np.sum(forecast_period)
 
@@ -454,9 +454,15 @@ for seed in seed_list:
     #######################################################################################
     ###################################   ADALASSO    #####################################
     #######################################################################################
-    X_train_stzd_tilde = X_train_stzd*np.abs(Ridgemodel_dict[min_idx_ridge].coef_)
-    X_val_stzd_tilde = X_val_stzd*np.abs(Ridgemodel_dict[min_idx_ridge].coef_)
-    X_test_stzd_tilde = X_test_stzd*np.abs(Ridgemodel_dict[min_idx_ridge].coef_)
+    X_train_stzd = (X_train_nnan - np.mean(X_train_nnan, axis=0))/np.std(X_train_nnan, axis = 0)
+    X_val_stzd = (X_val_nnan - np.mean(X_train_nnan, axis=0))/np.std(X_train_nnan, axis = 0)
+    X_test_stzd = (X_test_nnan - np.mean(X_train_nnan, axis=0))/np.std(X_train_nnan, axis = 0)    
+
+    OLS = LinearRegression(fit_intercept=True)
+    OLS.fit(X_train_stzd,Y_train)
+    X_train_stzd_tilde = X_train_stzd*np.abs(OLS.coef_)
+    X_val_stzd_tilde = X_val_stzd*np.abs(OLS.coef_)
+    X_test_stzd_tilde = X_test_stzd*np.abs(OLS.coef_)
 
     alpha_list = np.linspace(1e-15,0.00001,50)
     val_err = np.zeros((n_val,len(alpha_list)))
