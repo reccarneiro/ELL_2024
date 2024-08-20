@@ -79,15 +79,22 @@ def get_data(Transformation, lags):
     
     return X_used, Y_used, Date_used
 
-@jit(nopython=True)
-def get_Gram(X,n,gamma):
-    Gram_rbf = np.zeros((n,n))
-    for t in range(n):
-        Gram_rbf[t,:] = np.exp(-gamma*np.sum((X[t,:]-X)**2,1))
-    return Gram_rbf
+# @jit(nopython=True)
+# def get_Gram(X,n,gamma):
+#     Gram_rbf = np.zeros((n,n))
+#     for t in range(n):
+#         Gram_rbf[t,:] = np.exp(-gamma*np.sum((X[t,:]-X)**2,1))
+#     return Gram_rbf
+
+# @jit(nopython=True)
+# def get_Gram_test(X_train,X_test,n_train,n_test,gamma):
+#     Gram_rbf = np.zeros((n_test,n_train))
+#     for t in range(n_test):
+#         Gram_rbf[t,:] = np.exp(-gamma*np.sum((X_test[t,:]-X_train)**2,1))
+#     return Gram_rbf
 
 @jit(nopython=True)
-def get_Gram_test(X_train,X_test,n_train,n_test,gamma):
+def get_Gram_rbf(X_train, X_test, n_train, n_test, gamma):
     Gram_rbf = np.zeros((n_test,n_train))
     for t in range(n_test):
         Gram_rbf[t,:] = np.exp(-gamma*np.sum((X_test[t,:]-X_train)**2,1))
