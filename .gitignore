@@ -4,9 +4,15 @@ Inflation_Forecast/Figures/*
 Inflation_Forecast/Results/*
 Inflation_Forecast/ignore/*
 
+PSID_SVM/Data/*
+PSID_SVM/Figures/*
+PSID_SVM/Results/*
+PSID_SVM/ignore/*
+
 # But, do not ignore the database and data
 !Inflation_Forecast/Results/*.db
 !Inflation_Forecast/Data/2024-06.csv
+!PSID_SVM/Data/PSID_extended.csv
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
