@@ -9,10 +9,17 @@ PSID_SVM/Figures/*
 PSID_SVM/Results/*
 PSID_SVM/ignore/*
 
+Happiness/Data/*
+Happiness/Figures/*
+Happiness/Results/*
+Happiness/ignore/*
+
 # But, do not ignore the database and data
 !Inflation_Forecast/Results/*.db
 !Inflation_Forecast/Data/2024-06.csv
 !PSID_SVM/Data/PSID_extended.csv
+!Happiness/Data/Data_used.csv
+!Happiness/Results/*.db
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
